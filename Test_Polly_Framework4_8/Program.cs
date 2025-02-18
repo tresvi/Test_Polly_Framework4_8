@@ -70,7 +70,7 @@ namespace Test_Polly_Framework4_8
             var retryPolicy = Policy
                 .Handle<NullReferenceException>()
                 .Or<FormatException>()
-                .Or<NullReferenceException>()
+                .Or<DivideByZeroException>()
                 .OrInner<ArgumentOutOfRangeException>() //Detecta si hay alguna Inner del tipo determinado.
                 .Retry(3, (ex, nroReintento) => {
                     Console.WriteLine($"La operacion fallo reintento {nroReintento} " +
@@ -93,15 +93,15 @@ namespace Test_Polly_Framework4_8
                 .OrResult<int>(resultado => resultado == VALOR_INCORRECTO)    //Si propone que si el resultado es 1 se considere falla
                 .Retry(NRO_REINTENTOS, (excepcionOResultado, nroReintento) => {
 
-                    //Si el reintento NO fue por una Excepcion, entonces excepcionOResultado.Exception
-                    // valdrá null.
+                    //Si el reintento fue por una Excepcion, entonces excepcionOResultado.Exception
+                    // no valdrá null.
                     if (excepcionOResultado.Exception != null)
                     {
                         Console.WriteLine($"Ocurrio una excepcion  {nameof(excepcionOResultado.Exception)}. " +
                             $"Msje: {excepcionOResultado.Exception.Message}");
                     }
 
-                    //Si el reintento fue por una Excepcion, entonces excepcionOResultado.Result
+                    //Si el reintento NO fue por una Excepcion, entonces excepcionOResultado.Result
                     // será el valor default del tipo usado con .OnResult, en este caso un tipo int
                     // es decir, para el caso será 0, caso contrario, será el valor correspondiente
                     if (excepcionOResultado.Result != 0)
